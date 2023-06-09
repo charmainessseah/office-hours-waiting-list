@@ -1,15 +1,12 @@
 var mysql = require('mysql');
+require('dotenv').config();
 
 var connection = mysql.createConnection({
-    host: "avocado.ciip1144g4cq.us-east-1.rds.amazonaws.com",
-    user: "admin",
-    password: "teamAvocado!",
-    port: "3306",
-    database: "office_hours_waiting_list",
-    // host: process.env.DB_HOST,
-    // port: process.env.DB_PORT,
-    // user: process.env.DB_USER,
-    // password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+    database: process.env.DB_NAME
 });
 
 connection.connect(function (err) {
