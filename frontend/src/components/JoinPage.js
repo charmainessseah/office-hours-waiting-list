@@ -62,11 +62,12 @@ const JoinPage = () => {
             }).catch((error) => {
                 if (error.message === '403') {
                     setError('You have already joined the list.')
+                } else if (error.message === '404') {
+                    setError('This waiting list does not exist.')
                 }
                 hasError = true;
             });
 
-        console.log('error is: ', hasError)
         return hasError ? [-1, -1, -1] : [lastInsertedId, roomName, teachingAssistantName]
     }
 
@@ -81,6 +82,7 @@ const JoinPage = () => {
             }
         }
         const [lastInsertedId, roomName, teachingAssistantName] = await joinWaitingListApi();
+        console.log('returned values from join waiting list api', lastInsertedId, roomName, teachingAssistantName)
         if (lastInsertedId === -1 && roomName && -1 && teachingAssistantName === -1) {
             return false;
         }

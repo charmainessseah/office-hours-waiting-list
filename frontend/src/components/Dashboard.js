@@ -83,25 +83,32 @@ const Dashboard = () => {
             })
     }
 
+    // useEffect(() => {
+    //     getAllJoinedWaitingLists()
+
+    //     const interval = setInterval(() => {
+    //         getAllJoinedWaitingLists();
+    //     }, 5000);
+
+    //     return () => clearInterval(interval);
+    // }, [joinedWaitingLists])
+
     useEffect(() => {
         getAllJoinedWaitingLists()
-
-        const interval = setInterval(() => {
-            getAllJoinedWaitingLists();
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, [joinedWaitingLists])
-
+    }, [])
     useEffect(() => {
         getAllOpenWaitingLists()
-
-        const interval = setInterval(() => {
-            getAllOpenWaitingLists();
-        }, 5000);
-
-        return () => clearInterval(interval);
     }, [])
+
+    // useEffect(() => {
+    //     getAllOpenWaitingLists()
+
+    //     const interval = setInterval(() => {
+    //         getAllOpenWaitingLists();
+    //     }, 5000);
+
+    //     return () => clearInterval(interval);
+    // }, [])
 
     const handleLogout = () => {
         signOut(auth).then(() => {
@@ -263,7 +270,7 @@ const Dashboard = () => {
                                 let firstName = joinedList["student_first_name"]
                                 let lastName = joinedList["student_last_name"]
                                 let roomCode = joinedList["room_code_pk"]
-                                let studentID = joinedList["studentID_pk"]
+                                let studentID = joinedList["studentid_pk"]
                                 let roomName = joinedList["waiting_room_name"]
                                 let teachingAssistantName = joinedList["teaching_assistant_first_name"] + ' ' + joinedList["teaching_assistant_last_name"]
 

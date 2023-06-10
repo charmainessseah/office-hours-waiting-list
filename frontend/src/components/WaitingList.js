@@ -126,22 +126,22 @@ const WaitingList = () => {
 
         const interval = setInterval(() => {
             updateList();
-        }, 2000);
+        }, 10000);
 
         return () => clearInterval(interval);
-    }, [roomCode, studentList]);
+    }, []);
 
     return (
         <Grid container className={classes.background}>
             <Grid item xs={12} sm={12} md={10} lg={8} xl={6} className={`${classes.container} ${classes.root}`}>
-                    <Box onClick={() => navigate("/dashboard")}>
-                        <IconButton sx={{
-                            color: 'black', background: 'white', borderRadius: '50%', '&:hover': { background: '#000000', opacity: 0.7, transition: '.2s' }
-                        }}>
-                            <ArrowBackIcon sx={{ fontSize: '40px' }} />
-                        </IconButton>
-                    </Box>
-            <Typography
+                <Box onClick={() => navigate("/dashboard")}>
+                    <IconButton sx={{
+                        color: 'black', background: 'white', borderRadius: '50%', '&:hover': { background: '#000000', opacity: 0.7, transition: '.2s' }
+                    }}>
+                        <ArrowBackIcon sx={{ fontSize: '40px' }} />
+                    </IconButton>
+                </Box>
+                <Typography
                     variant="h4"
                     className={classes.title}
                     style={{ color: "black", fontWeight: "bold" }}
@@ -154,26 +154,26 @@ const WaitingList = () => {
                 >
                     Room: {roomName} | TA: {firstName} {lastName}
                 </Typography>
-                    <List>
-                        {studentList.map((item) => (
-                            <ListItem>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        {item["student_first_name"][0]}
-                                        {item["student_last_name"][0]}
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText>
-                                    {item["student_first_name"]} {item["student_last_name"]}
-                                </ListItemText>
-                                <ListItemSecondaryAction>
-                                        <Button variant="outlined" onClick={() => removeStudent(item["studentID_pk"])}>
-                                            Remove
-                                        </Button>
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        ))}
-                    </List>
+                <List>
+                    {studentList.map((item) => (
+                        <ListItem>
+                            <ListItemAvatar>
+                                <Avatar>
+                                    {item["student_first_name"][0]}
+                                    {item["student_last_name"][0]}
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText>
+                                {item["student_first_name"]} {item["student_last_name"]}
+                            </ListItemText>
+                            <ListItemSecondaryAction>
+                                <Button variant="outlined" onClick={() => removeStudent(item["studentid_pk"])}>
+                                    Remove
+                                </Button>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    ))}
+                </List>
                 <Grid container justifyContent="right" style={{ marginBottom: '-20px' }}>
                     <Box style={{ marginTop: '50px' }} onClick={() => navigate("/dashboard")}>
                         <Button onClick={() => deleteRoom()} variant="contained" className="shadow" sx={{
@@ -185,7 +185,7 @@ const WaitingList = () => {
                     </Box>
                 </Grid>
                 <Grid>
-                    <Typography sx={{fontWeight: 'bold'}}>Room Code: {roomCode}</Typography>
+                    <Typography sx={{ fontWeight: 'bold' }}>Room Code: {roomCode}</Typography>
                 </Grid>
 
             </Grid>
