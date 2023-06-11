@@ -36,6 +36,7 @@ export const joinWaitingRoom = async (req, res) => {
                         res.status(400).json({ message: 'failed to join a waiting list' })
                         throw error;
                     })
+                studentId = studentId[0]['studentid_pk']
 
                 sqlQuery = 'SELECT waiting_room_name, teaching_assistant_first_name, teaching_assistant_last_name FROM teaching_assistant WHERE room_code_pk =$1'
                 const result = await db.any(sqlQuery, [roomCode])
@@ -102,7 +103,7 @@ export const studentFind = async (req, res) => {
 
         const result = await db.any(sqlQuery, [roomCode, 1])
         const positionInList = result.findIndex(student => student['studentid_pk'] === studentId) + 1;
-
+        console.log('position in list: ', positionInList)
         return res.status(200).json({ message: positionInList })
     }
     catch (error) {

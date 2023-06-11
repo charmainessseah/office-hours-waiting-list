@@ -50,14 +50,12 @@ const PositionPage = () => {
 
     const roomName = state.roomName
     const teachingAssistantName = state.teachingAssistantName
-    console.log(firstName, lastName, roomCode, studentID, roomName, teachingAssistantName)
     const [studentCount, setStudentCount] = useState(0);
 
     const removeStudent = async (studentID) => {
         const user = auth.currentUser;
         const token = user && (await user.getIdToken());
 
-        console.log(studentID);
         let url = `http://localhost:4000/student/leaveWaitingRoom`
         let response = await fetch(url, {
             method: "POST",
@@ -72,7 +70,7 @@ const PositionPage = () => {
         navigate('/dashboard')
     }
 
-    const countlist = async () => {
+    const getPositionInList = async () => {
 
         const user = auth.currentUser;
         const token = user && (await user.getIdToken());
@@ -99,14 +97,15 @@ const PositionPage = () => {
     }
 
     useEffect(() => {
-        countlist()
+        getPositionInList()
 
         const interval = setInterval(() => {
-            countlist();
+            getPositionInList();
         }, 5000);
 
         return () => clearInterval(interval);
-    }, [roomCode, studentCount])
+    }, [])
+    // [roomCode, studentCount]
 
     return (
         <Grid container className={classes.background}>

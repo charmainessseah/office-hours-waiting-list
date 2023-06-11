@@ -88,7 +88,6 @@ const WaitingList = () => {
         const user = auth.currentUser;
         const token = user && (await user.getIdToken());
 
-        console.log(studentID);
         let url = `http://localhost:4000/student/leaveWaitingRoom`
         let response = await fetch(url, {
             method: "POST",
