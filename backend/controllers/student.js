@@ -16,52 +16,37 @@ export const joinWaitingRoom = async (req, res) => {
         let studentLastName = data['student_last_name']
         let roomCode = data['room_code']
 
-        // check if room exists
-        db.query(`SELECT * FROM teaching_assistant WHERE room_code_pk= "${roomCode}"`, function (err, row) {
-            if (err) {
-                res.status(400).json({ message: 'failed to join room' })
-                throw err;
-            }
-            else {
-                if (row && row.length) {
-                    // room exists -> now check if user has already joined the waiting list
-                    let checkIfUserIsAlreadyWaitingInListQuery = `SELECT * FROM student WHERE room_code_pk = "${roomCode}" AND user_id = "${user_id}" AND is_waiting = 1`
+        // first check that this waiting list exists
+        let sqlQuery = 'SELECT * FROM teaching_assistant WHERE room_code_pk=$1';
+        let result = await db.any(sqlQuery, [roomCode]);
+        const roomExists = result.length === 0 ? 0 : 1;
 
-                    db.query(checkIfUserIsAlreadyWaitingInListQuery, function (err, result, fields) {
-                        if (result && result.length) {
-                            // room exists and user has already joined this list
-                            return res.status(403).json({ message: "user has already joined this waiting list." })
-                        } else {
-                            // room exists but user has not yet joined the list
-                            db.query(`INSERT INTO student (student_first_name, student_last_name, time_entered, time_left, room_code_pk, is_waiting, user_id) VALUES ('${studentFirstName}', '${studentLastName}', now(), null, '${roomCode}', 1, '${user_id}');`, function (err, result, fields) {
-                                if (err) {
-                                    res.status(400).json({ message: 'failed to join a waiting room' })
-                                    throw err;
-                                }
-                                console.log(result);
-                            })
+        if (roomExists) {
+            // check that this user has not already joined the list
+            sqlQuery = 'SELECT * FROM student WHERE room_code_pk=$1 AND user_id=$2 AND is_waiting=$3'
+            result = await db.any(sqlQuery, [roomCode, user_id, 1])
+            const userHasJoinedList = result.length === 0 ? 0 : 1;
 
-                            // retrieve id of user that just joined the list
-                            db.query(`SELECT LAST_INSERT_ID() AS LastID;`, function (err, result, fields) {
-                                if (err) {
-                                    res.status(400).json({ message: 'failed to join a waiting room' })
-                                    throw err;
-                                }
-                                let lastInsertedId = result[0].LastID
-
-                                db.query(`SELECT waiting_room_name, teaching_assistant_first_name, teaching_assistant_last_name FROM teaching_assistant WHERE room_code_pk = '${roomCode}';`, function (err, result, fields) {
-
-                                    return res.json({ message: 'successfully joined the waiting list', last_inserted_id: lastInsertedId, query_result: result[0] })
-                                })
-                            })
-                        }
+            if (userHasJoinedList) {
+                return res.status(403).json({ message: "user has already joined this waiting list." })
+            } else {
+                sqlQuery = 'INSERT INTO student (student_first_name, student_last_name, time_entered, time_left, room_code_pk, is_waiting, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING studentid_pk;'
+                let studentId = await db.any(sqlQuery, [studentFirstName, studentLastName, new Date(), null, roomCode, 1, user_id])
+                    .catch(function (error) {
+                        res.status(400).json({ message: 'failed to join a waiting list' })
+                        throw error;
                     })
-                } else {
-                    console.log('List does not exist!');
-                    return res.status(404).json({ message: "List does not exist!" });
-                }
+                studentId = studentId[0]['studentid_pk']
+
+                sqlQuery = 'SELECT waiting_room_name, teaching_assistant_first_name, teaching_assistant_last_name FROM teaching_assistant WHERE room_code_pk =$1'
+                const result = await db.any(sqlQuery, [roomCode])
+
+                return res.json({ message: 'successfully joined the waiting list', last_inserted_id: studentId, query_result: result[0] })
             }
-        });
+        } else {
+            console.log('List does not exist!');
+            return res.status(404).json({ message: "This waiting list does not exist" });
+        }
     } catch (error) {
         return res.status(422).json({ errors: error.errors });
     }
@@ -78,33 +63,30 @@ export const leaveWaitingRoom = async (req, res) => {
         const data = leaveWaitingRoomSchema.validateSync(body, { abortEarly: false, stripUnknown: true });
 
         let id = data['studentID_pk']
+        console.log('data', data)
 
-        // Searches db to see if student is in the waiting list 
-        db.query(`SELECT * FROM student WHERE studentID_pk= ${id} AND is_waiting = 1`, function (err, row) {
+        // first check that this person is on the waiting list
+        let sqlQuery = 'SELECT * FROM student WHERE studentID_pk=$1 AND is_waiting = $2'
+        let result = await db.any(sqlQuery, [id, 1])
 
-            // If student exists in database, remove from wait list
-            if (err) {
-                res.status(400).json({ message: 'failed to leave room' })
-                throw err;
-            }
-            else {
-                if (row && row.length) {
-                    db.query(`UPDATE student SET time_left = now(), is_waiting = 0 WHERE studentID_pk = ${id}`, function (err, result, fields) {
-                        if (err) throw err;
-                        console.log('Successfully removed from wait list.');
-                        return res.json({
-                            message: 'Successfully removed from wait list.'
-                        });
-                    })
-                } else {
-                    console.log('Student was not found in list!');
-                    return res.status(403).json({ message: "Student was not found in list!" });;
-                }
-            }
+        console.log('result len: ', result.length)
 
-        });
-
+        if (result && result.length) {
+            sqlQuery = 'UPDATE student SET time_left=$1, is_waiting=$2 WHERE studentid_pk=$3'
+            db.any(sqlQuery, [new Date(), 0, id])
+                .then(function (data) {
+                    return res.json({
+                        message: 'Successfully removed student from the waiting list.'
+                    });
+                })
+                .catch(function (error) {
+                    return res.status(404).json({ message: "Error trying to remove student from the waiting list" });;
+                })
+        } else {
+            return res.status(403).json({ message: "Student was not found in the list!" });;
+        }
     } catch (error) {
+        console.log('ther was an error trying to remove student')
         return res.status(422).json({ errors: error.errors });
     }
 }
@@ -113,43 +95,19 @@ export const leaveWaitingRoom = async (req, res) => {
      * @return  The current position of the student in the waiting list
      */
 export const studentFind = async (req, res) => {
-    const { body } = req;
-
     try {
-        const data = findStudentSchema.validateSync(body, { abortEarly: false, stripUnknown: true });
-        let id = data['studentID_pk']
-        let roomCode = data['room_code_pk']
-        let sqlQuery = `SELECT studentID_pk FROM student WHERE room_code_pk = "${roomCode}" AND is_waiting = 1 ORDER BY time_entered ASC`;
+        let studentId = Number(req.query.studentId)
+        let roomCode = req.query.roomCode
 
-        // return a json and go through it to find matching student ID
-        db.query(sqlQuery, function (error, result, fields) {
-            // throws error if something goes wrong
-            if (error) {
-                res.status(400).json({ message: 'Student doesn\'t exist!' })
-                throw error;
-            }
-            // prints result of the query
-            else {
-                var count = 0;
-                for (var i = 0; i < result.length; i++) {
-                    if (result[i].studentID_pk == id) {
-                        count++;
-                        break;
-                    }
-                    else {
-                        count++;
-                    }
-                }
+        let sqlQuery = 'SELECT studentid_pk FROM student WHERE room_code_pk=$1 AND is_waiting=$2 ORDER BY time_entered ASC';
 
-                return res.json({
-                    message: count
-                });
-            }
-        });
+        const result = await db.any(sqlQuery, [roomCode, 1])
+        const positionInList = result.findIndex(student => student['studentid_pk'] === studentId) + 1;
+        console.log('position in list: ', positionInList)
+        return res.status(200).json({ message: positionInList })
     }
     catch (error) {
+        console.log('encountered error student find')
         return res.status(422).json({ errors: error.errors });
     }
-
-
 }
