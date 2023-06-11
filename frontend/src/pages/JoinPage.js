@@ -81,8 +81,8 @@ const JoinPage = () => {
                 return false;
             }
         }
+
         const [lastInsertedId, roomName, teachingAssistantName] = await joinWaitingListApi();
-        console.log('returned values from join waiting list api', lastInsertedId, roomName, teachingAssistantName)
         if (lastInsertedId === -1 && roomName && -1 && teachingAssistantName === -1) {
             return false;
         }

@@ -105,7 +105,6 @@ const PositionPage = () => {
 
         return () => clearInterval(interval);
     }, [])
-    // [roomCode, studentCount]
 
     return (
         <Grid container className={classes.background}>

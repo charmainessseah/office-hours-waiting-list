@@ -1,14 +1,14 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import HomePage from './components/HomePage';
-import JoinPage from './components/JoinPage';
-import WaitingList from './components/WaitingList';
-import CreateListPage from './components/CreateListPage';
-import LoginPage from './components/LoginPage';
-import SignupPage from './components/SignupPage';
-import ForgotPasswordPage from './components/ForgotPasswordPage';
-import Dashboard from './components/Dashboard';
-import PositionPage from './components/PositionPage'
+import HomePage from './pages/HomePage';
+import JoinPage from './pages/JoinPage';
+import WaitingListAdminPage from './pages/WaitingListAdminPage';
+import CreateListPage from './pages/CreateListPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import DashboardPage from './pages/DashboardPage';
+import PositionPage from './pages/PositionPage'
 import PrivateRoutes from './utils/PrivateRoutes';
 import './App.css';
 import './styles.css';
@@ -45,10 +45,10 @@ const App = () => (
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/resetPassword" element={<ForgotPasswordPage />} />
             <Route element={<PrivateRoutes />}>
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/join-page" element={<JP />} />
                 <Route path="/create-list-page" element={<CreateListPage />} />
-                <Route path="/waiting-list" element={<WaitingList />} />
+                <Route path="/waiting-list" element={<WaitingListAdminPage />} />
                 <Route path="/student-view" element={<PositionPage />} />
             </Route>
         </Routes>

@@ -78,7 +78,6 @@ const Dashboard = () => {
             .then(res => res.json())
             .then(data => {
                 let joinedWaitingLists = data["query_result"]
-                console.log(joinedWaitingLists)
                 setJoinedWaitingLists(joinedWaitingLists)
             })
     }

@@ -44,7 +44,6 @@ export const joinWaitingRoom = async (req, res) => {
                 return res.json({ message: 'successfully joined the waiting list', last_inserted_id: studentId, query_result: result[0] })
             }
         } else {
-            console.log('List does not exist!');
             return res.status(404).json({ message: "This waiting list does not exist" });
         }
     } catch (error) {
@@ -63,13 +62,10 @@ export const leaveWaitingRoom = async (req, res) => {
         const data = leaveWaitingRoomSchema.validateSync(body, { abortEarly: false, stripUnknown: true });
 
         let id = data['studentID_pk']
-        console.log('data', data)
 
         // first check that this person is on the waiting list
         let sqlQuery = 'SELECT * FROM student WHERE studentID_pk=$1 AND is_waiting = $2'
         let result = await db.any(sqlQuery, [id, 1])
-
-        console.log('result len: ', result.length)
 
         if (result && result.length) {
             sqlQuery = 'UPDATE student SET time_left=$1, is_waiting=$2 WHERE studentid_pk=$3'
@@ -86,7 +82,6 @@ export const leaveWaitingRoom = async (req, res) => {
             return res.status(403).json({ message: "Student was not found in the list!" });;
         }
     } catch (error) {
-        console.log('ther was an error trying to remove student')
         return res.status(422).json({ errors: error.errors });
     }
 }
@@ -103,11 +98,10 @@ export const studentFind = async (req, res) => {
 
         const result = await db.any(sqlQuery, [roomCode, 1])
         const positionInList = result.findIndex(student => student['studentid_pk'] === studentId) + 1;
-        console.log('position in list: ', positionInList)
+
         return res.status(200).json({ message: positionInList })
     }
     catch (error) {
-        console.log('encountered error student find')
         return res.status(422).json({ errors: error.errors });
     }
 }

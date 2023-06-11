@@ -99,7 +99,6 @@ const WaitingList = () => {
                 studentID_pk: studentID
             }),
         })
-        console.log(response)
     }
 
     const deleteRoom = async () => {
@@ -117,7 +116,6 @@ const WaitingList = () => {
                 room_code_pk: roomCode
             }),
         })
-        console.log(response)
     }
 
     useEffect(() => {

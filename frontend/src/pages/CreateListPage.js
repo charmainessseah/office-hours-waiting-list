@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, Grid, Paper } from '@mui/material';
+import { Box, Button, TextField, Typography, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import createGraphic from '../images/create-graphic.jpg';
 import { auth } from "../firebase"
