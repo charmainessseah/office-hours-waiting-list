@@ -49,7 +49,7 @@ const App = () => (
                 <Route path="/join-page" element={<JP />} />
                 <Route path="/create-list-page" element={<CreateListPage />} />
                 <Route path="/waiting-list" element={<WaitingListAdminPage />} />
-                <Route path="/student-view" element={<PositionPage />} />
+                <Route path="/position-page" element={<PositionPage />} />
             </Route>
         </Routes>
     </div>

@@ -1,10 +1,10 @@
 import express from 'express'
-import { getAllOpenWaitingLists, getAllJoinedWaitingRooms } from '../controllers/dashboard.js';
+import { getAllOpenWaitingLists, getAllJoinedWaitingLists } from '../controllers/dashboard.js';
 
 const router = express.Router();
 
 router.get('/get-all-open-waiting-lists', getAllOpenWaitingLists)
 
-router.get('/getAllJoinedWaitingRooms', getAllJoinedWaitingRooms)
+router.get('/getAllJoinedWaitingLists', getAllJoinedWaitingLists)
 
 export default router;

@@ -1,4 +1,5 @@
-import waitingRoomRoutes from './routes/waitingRoom.js'
+import userRoutes from './routes/user.js '
+import waitingListRoutes from './routes/waitingList.js'
 import studentRoutes from './routes/student.js'
 import dashboardRoutes from './routes/dashboard.js'
 import bodyParser from "body-parser";
@@ -16,7 +17,8 @@ app.use(cors())
 // parse token and get the uid for each request
 app.use('/', VerifyToken)
 
-app.use('/waitingRoom', waitingRoomRoutes)
+app.use('/user', userRoutes)
+app.use('/waitingList', waitingListRoutes)
 app.use('/student', studentRoutes)
 app.use('/dashboard', dashboardRoutes)
 

@@ -45,18 +45,22 @@ const PositionPage = () => {
     const classes = useStyles();
     const navigate = useNavigate();
     const { state } = useLocation()
-    const { firstName, lastName, roomCode } = state.formInput
+
+    const firstName = state.firstName
+    const lastName = state.lastName
     const studentID = state.studentID;
 
-    const roomName = state.roomName
-    const teachingAssistantName = state.teachingAssistantName
+    const roomName = state.roomName;
+    const roomCode = state.roomCode;
+    const teachingAssistantName = state.teachingAssistantName;
+
     const [studentCount, setStudentCount] = useState(0);
 
     const removeStudent = async (studentID) => {
         const user = auth.currentUser;
         const token = user && (await user.getIdToken());
 
-        let url = `http://localhost:4000/student/leaveWaitingRoom`
+        let url = `http://localhost:4000/student/leaveWaitingList`
         let response = await fetch(url, {
             method: "POST",
             headers: {
@@ -71,7 +75,6 @@ const PositionPage = () => {
     }
 
     const getPositionInList = async () => {
-
         const user = auth.currentUser;
         const token = user && (await user.getIdToken());
 

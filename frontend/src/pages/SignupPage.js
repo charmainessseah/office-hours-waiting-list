@@ -40,6 +40,8 @@ const useStyles = makeStyles((theme) => ({
 const SignupPage = () => {
     const navigate = useNavigate();
 
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
     const [password1, setPassword1] = useState('');
     const [password2, setPassword2] = useState('');
@@ -48,21 +50,62 @@ const SignupPage = () => {
     const onSubmit = async (e) => {
         e.preventDefault()
 
+        if (firstName.trim().length === 0 || lastName.trim().length === 0) {
+            setError('Error: Name fields cannot be empty')
+            return
+        }
+
+        if (password1.trim().length === 0 || password2.trim().length === 0) {
+            setError('Error: Password fields cannot be empty')
+            return
+        }
+
         if (password1 !== password2) {
             setError('Error: Passwords do not match')
             return
         }
+
         await createUserWithEmailAndPassword(auth, email, password1)
             .then((userCredential) => {
                 // created successfully
                 const user = userCredential.user;
+                console.log('user: ', user)
+                console.log('user auth: ', user.auth)
+                console.log('user token: ', user.accessToken)
+                user.auth.first_name = firstName
+                user.auth.last_name = lastName
                 console.log('CREATED ACCOUNT SUCCESSFULLY - your user is: ', user);
-                navigate("/login")
+                console.log('getting uid: ', user.uid)
+                return Promise.resolve([firstName, lastName, user.accessToken])
+                //navigate("/login")
+            })
+            .then(([firstName, lastName, token]) => {
+                console.log('inside second then: ', firstName, lastName, token)
+                createUser(firstName, lastName, token)
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
             });
+    }
+
+    const createUser = async (firstName, lastName, token) => {
+        console.log('inside create user: ', firstName, lastName, token)
+        let url = `http://localhost:4000/user/createUser`
+        let response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                first_name: firstName,
+                last_name: lastName,
+            }),
+        })
+
+        navigate('/login')
+        console.log('done with createUser')
     }
 
     const classes = useStyles();
@@ -77,6 +120,24 @@ const SignupPage = () => {
 
                 <form>
                     <div className={classes.formContainer}>
+                        <TextField
+                            type="firstName"
+                            label="First name"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            required
+                            fullWidth
+                        />
+
+                        <TextField
+                            type="lastName"
+                            label="Last name"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            required
+                            fullWidth
+                        />
+
                         <TextField
                             type="email"
                             label="Email address"

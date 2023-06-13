@@ -58,7 +58,9 @@ const WaitingList = () => {
 
     const navigate = useNavigate();
     const { state } = useLocation()
-    const { firstName, lastName, roomName } = state.formInput
+    const firstName = state.firstName
+    const lastName = state.lastName
+    const roomName = state.waitingListName
     const roomCode = state.roomCode
 
     const [studentList, setStudentList] = useState([])
@@ -68,7 +70,7 @@ const WaitingList = () => {
         const token = user && (await user.getIdToken());
 
         if (roomCode) {
-            let url = `http://localhost:4000/waitingRoom/getAllStudentsInWaitingRoom/?roomCode=${roomCode}`
+            let url = `http://localhost:4000/waitingList/getAllStudentsInWaitingList/?roomCode=${roomCode}`
             fetch(url, {
                 method: "GET",
                 headers: {
@@ -88,7 +90,7 @@ const WaitingList = () => {
         const user = auth.currentUser;
         const token = user && (await user.getIdToken());
 
-        let url = `http://localhost:4000/student/leaveWaitingRoom`
+        let url = `http://localhost:4000/student/leaveWaitingList`
         let response = await fetch(url, {
             method: "POST",
             headers: {
@@ -105,7 +107,7 @@ const WaitingList = () => {
         const user = auth.currentUser;
         const token = user && (await user.getIdToken());
 
-        let url = `http://localhost:4000/waitingRoom/destroyWaitingRoom`
+        let url = `http://localhost:4000/waitingList/destroyWaitingList`
         let response = await fetch(url, {
             method: "POST",
             headers: {
@@ -156,12 +158,12 @@ const WaitingList = () => {
                         <ListItem>
                             <ListItemAvatar>
                                 <Avatar>
-                                    {item["student_first_name"][0]}
-                                    {item["student_last_name"][0]}
+                                    {item["first_name"][0]}
+                                    {item["last_name"][0]}
                                 </Avatar>
                             </ListItemAvatar>
                             <ListItemText>
-                                {item["student_first_name"]} {item["student_last_name"]}
+                                {item["first_name"]} {item["last_name"]}
                             </ListItemText>
                             <ListItemSecondaryAction>
                                 <Button variant="outlined" onClick={() => removeStudent(item["studentid_pk"])}>
