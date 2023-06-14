@@ -2,16 +2,13 @@ import db from '../dbconfig.js'
 import { userSignUpSchema } from './validators/userValidators.js';
 
 export const createUser = async (req, res) => {
-    console.log('inside create user')
     const { body } = req;
     const user_id = req.app.locals.uid
-    console.log('user id: ', user_id)
 
     try {
         const data = userSignUpSchema.validateSync(body, { abortEarly: false, stripUnknown: true });
         let firstName = data['first_name']
         let lastName = data['last_name']
-        console.log('name: ', firstName, ' ', lastName)
 
         let sqlQuery = `INSERT INTO users (user_id, first_name, last_name) VALUES ($1, $2, $3)`
 

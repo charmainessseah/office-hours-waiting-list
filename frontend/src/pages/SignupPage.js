@@ -69,18 +69,13 @@ const SignupPage = () => {
             .then((userCredential) => {
                 // created successfully
                 const user = userCredential.user;
-                console.log('user: ', user)
-                console.log('user auth: ', user.auth)
-                console.log('user token: ', user.accessToken)
                 user.auth.first_name = firstName
                 user.auth.last_name = lastName
+
                 console.log('CREATED ACCOUNT SUCCESSFULLY - your user is: ', user);
-                console.log('getting uid: ', user.uid)
                 return Promise.resolve([firstName, lastName, user.accessToken])
-                //navigate("/login")
             })
             .then(([firstName, lastName, token]) => {
-                console.log('inside second then: ', firstName, lastName, token)
                 createUser(firstName, lastName, token)
             })
             .catch((error) => {
@@ -90,8 +85,8 @@ const SignupPage = () => {
     }
 
     const createUser = async (firstName, lastName, token) => {
-        console.log('inside create user: ', firstName, lastName, token)
         let url = `http://localhost:4000/user/createUser`
+
         let response = await fetch(url, {
             method: "POST",
             headers: {
@@ -105,7 +100,6 @@ const SignupPage = () => {
         })
 
         navigate('/login')
-        console.log('done with createUser')
     }
 
     const classes = useStyles();

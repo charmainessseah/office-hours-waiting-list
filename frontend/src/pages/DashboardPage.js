@@ -52,7 +52,7 @@ const Dashboard = () => {
         const user = auth.currentUser;
         const token = user && (await user.getIdToken());
 
-        let url = `http://localhost:4000/dashboard/get-all-open-waiting-lists`
+        let url = `http://localhost:4000/dashboard/getAllCreatedWaitingLists`
         fetch(url, {
             method: "GET",
             headers: {
@@ -147,17 +147,14 @@ const Dashboard = () => {
         signOut(auth).then(() => {
             // Sign-out successful.
             navigate("/login");
-            console.log("Signed out successfully")
         }).catch((error) => {
-            // An error happened.
+            console.log('An error occurred while logging out.')
         });
     }
 
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in, see docs for a list of available properties
-                // https://firebase.google.com/docs/reference/js/firebase.User
                 const uid = user.uid;
                 console.log("SIGNED IN - uid: ", uid)
             } else {
@@ -205,8 +202,6 @@ const Dashboard = () => {
                             <Typography variant="h6" sx={{ marginTop: -1, textAlign: "right" }} gutterBottom>
                                 <strong> {firstName} </strong>
                                 <strong> {lastName} </strong>
-                                {console.log(auth)}
-                                {console.log(auth.currentUser)}
                             </Typography>
                         ) : (
                             <Typography variant="h6" gutterBottom>
@@ -215,9 +210,11 @@ const Dashboard = () => {
                         )}
                     </Typography>
                     <Grid
-                        onClick={() => navigate('/join-page', { state: { firstName: firstName, lastName: lastName } })}
-                        container spacing={2} mt={2}>
-                        <Grid item xs={12} sm={6}>
+
+                        container spacing={2} mt={2}
+                    >
+                        <Grid item xs={12} sm={6}
+                            onClick={() => navigate('/join-page', { state: { firstName: firstName, lastName: lastName } })}>
                             <Button
                                 component={Link}
                                 variant="outlined"
@@ -263,7 +260,7 @@ const Dashboard = () => {
                     </Box>
                 </Box>
                 <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 3, paddingTop: 2, marginTop: 3 }}>
-                    <Typography variant="h4" sx={{ textAlign: "center", fontWeight: "Bold", marginBottom: 3 }}>Open Lists</Typography>
+                    <Typography variant="h4" sx={{ textAlign: "center", fontWeight: "Bold", marginBottom: 3 }}>Created Lists</Typography>
                     <Table sx={{ minWidth: 650 }} aria-label="open waiting lists">
                         <TableHead>
                             <TableRow>
@@ -274,8 +271,8 @@ const Dashboard = () => {
                         </TableHead>
                         <TableBody>
                             {openWaitingLists.map(waitingList => {
-                                let firstName = waitingList["teaching_assistant_first_name"]
-                                let lastName = waitingList["teaching_assistant_last_name"]
+                                let firstName = waitingList["first_name"]
+                                let lastName = waitingList["last_name"]
                                 let roomName = waitingList["waiting_list_name"]
                                 let roomCode = waitingList["room_code_pk"]
 
@@ -309,12 +306,16 @@ const Dashboard = () => {
                         </TableHead>
                         <TableBody>
                             {joinedWaitingLists.map(joinedList => {
-                                let firstName = joinedList["student_first_name"]
-                                let lastName = joinedList["student_last_name"]
+                                // let firstName = joinedList["student_first_name"]
+                                // let lastName = joinedList["student_last_name"]
+                                // let studentID = joinedList["studentid_pk"]
+                                // let roomName = joinedList["waiting_list_name"]
+                                // let roomCode = joinedList["room_code_pk"]
+                                // let teachingAssistantName = joinedList["teaching_assistant_first_name"] + ' ' + joinedList["teaching_assistant_last_name"]
                                 let studentID = joinedList["studentid_pk"]
                                 let roomName = joinedList["waiting_list_name"]
                                 let roomCode = joinedList["room_code_pk"]
-                                let teachingAssistantName = joinedList["teaching_assistant_first_name"] + ' ' + joinedList["teaching_assistant_last_name"]
+                                let teachingAssistantName = joinedList["ta_first_name"] + joinedList["ta_last_name"]
 
                                 return (
                                     <TableRow key={studentID}>
@@ -335,7 +336,7 @@ const Dashboard = () => {
                     </Table>
                 </TableContainer>
             </Container>
-        </div>
+        </div >
     );
 };
 

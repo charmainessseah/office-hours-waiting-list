@@ -59,7 +59,6 @@ export const getAllStudentsInWaitingList = async (req, res) => {
                 }
             ).catch(
                 function (error) {
-                    console.log('error')
                     res.status(400).json({ message: 'failed to retrieve list of students in the waiting room' })
                     throw error;
                 }

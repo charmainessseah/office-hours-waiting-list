@@ -78,13 +78,6 @@ const JoinPage = () => {
             return false;
         }
 
-        console.log('firstname: ', firstName)
-        console.log('lastname: ', lastName)
-        console.log('studentID', lastInsertedId)
-        console.log('roomname', roomName)
-        console.log('roomcodeL: ', roomCode)
-        console.log('teaching assistnat name', teachingAssistantName)
-
         navigate('/position-page', {
             state: {
                 firstName: firstName,
@@ -139,7 +132,7 @@ const JoinPage = () => {
                         }}
                     >
                         <Typography variant="h4" component="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'black', marginBottom: '2rem', textAlign: 'left' }}>
-                            Join a Room
+                            Join a List
                         </Typography>
 
                         <Box mt={2}>

@@ -43,8 +43,8 @@ const CreateListPage = () => {
             return false;
         }
         const roomCode = await createWaitingListApi()
-        console.log('create list api result: ', roomCode)
         navigate('/waiting-list', { state: { firstName: firstName, lastName: lastName, waitingListName: waitingListName, roomCode: roomCode } });
+
         return true;
     }
 

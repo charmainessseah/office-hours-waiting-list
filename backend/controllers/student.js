@@ -31,7 +31,6 @@ export const joinWaitingList = async (req, res) => {
                 sqlQuery = 'INSERT INTO student (time_entered, time_left, room_code_pk, is_waiting, user_id) VALUES ($1, $2, $3, $4, $5) RETURNING studentid_pk;'
                 let studentId = await db.any(sqlQuery, [new Date(), null, roomCode, 1, user_id])
                     .catch(function (error) {
-                        console.log('error')
                         return res.status(400).json({ message: 'failed to join a waiting list' })
                     })
                 studentId = studentId[0]['studentid_pk']
@@ -72,7 +71,6 @@ export const leaveWaitingList = async (req, res) => {
         let result = await db.any(sqlQuery, [id, 1])
 
         if (result && result.length) {
-            console.log('inside if')
             sqlQuery = 'UPDATE student SET time_left=$1, is_waiting=$2 WHERE studentid_pk=$3'
             db.any(sqlQuery, [new Date(), 0, id])
                 .then(function (data) {
@@ -84,7 +82,6 @@ export const leaveWaitingList = async (req, res) => {
                     return res.status(404).json({ message: "Error trying to remove student from the waiting list" });;
                 })
         } else {
-            console.log('inside else')
             return res.status(403).json({ message: "Student was not found in the list!" });;
         }
     } catch (error) {

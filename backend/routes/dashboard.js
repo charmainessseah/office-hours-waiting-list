@@ -1,9 +1,9 @@
 import express from 'express'
-import { getAllOpenWaitingLists, getAllJoinedWaitingLists } from '../controllers/dashboard.js';
+import { getAllCreatedWaitingLists, getAllJoinedWaitingLists } from '../controllers/dashboard.js';
 
 const router = express.Router();
 
-router.get('/get-all-open-waiting-lists', getAllOpenWaitingLists)
+router.get('/getAllCreatedWaitingLists', getAllCreatedWaitingLists)
 
 router.get('/getAllJoinedWaitingLists', getAllJoinedWaitingLists)
 
