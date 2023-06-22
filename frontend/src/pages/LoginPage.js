@@ -57,7 +57,6 @@ const LoginPage = () => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 setError('The username and/or password you specified are not correct.')
-                console.log(errorCode, errorMessage)
             });
 
     }

@@ -59,12 +59,10 @@ const ForgotPasswordPage = () => {
             .then(() => {
                 setError('')
                 setConfirmationMessage('Password reset link has been sent to your email.')
-                console.log('sent email reset link successfully');
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                console.log(errorCode, errorMessage);
             });
     }
 

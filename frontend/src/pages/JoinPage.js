@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, Grid } from '@mui/material';
+import { Box, Button, TextField, Typography, Grid, IconButton } from '@mui/material';
 import joinGraphic from '../images/join_graphic.jpg';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { auth } from "../firebase"
 import logo from "../images/AOWL.png";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const JoinPage = () => {
     const navigate = useNavigate();
     const [error, setError] = useState('')
     const [studentID, setStudentID] = useState([])
-    const [formInput, setFormInput] = useState({
-        firstName: "",
-        lastName: "",
-        roomCode: "",
-    })
-    const [roomName, setRoomName] = useState('')
 
-    const handleFormInputChange = (event) => {
-        setFormInput({ ...formInput, [event.target.name]: event.target.value })
-    }
+    const { state } = useLocation()
+    const firstName = state.firstName
+    const lastName = state.lastName
+
+    const [roomName, setRoomName] = useState('')
+    const [roomCode, setRoomCode] = useState('')
 
     const isEmpty = (str) => {
         return (!str || str.trim().length === 0);
@@ -41,9 +39,7 @@ const JoinPage = () => {
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-                student_first_name: formInput["firstName"].trim(),
-                student_last_name: formInput["lastName"].trim(),
-                room_code: formInput["roomCode"].trim()
+                room_code: roomCode
             }),
         })
             .then(response => {
@@ -55,8 +51,8 @@ const JoinPage = () => {
             })
             .then(data => {
                 lastInsertedId = data["last_inserted_id"]
-                roomName = data["query_result"]["waiting_room_name"]
-                teachingAssistantName = data["query_result"]["teaching_assistant_first_name"] + ' ' + data["query_result"]["teaching_assistant_last_name"]
+                roomName = data["waiting_list_name"]
+                teachingAssistantName = data["first_name"] + ' ' + data["last_name"]
                 setStudentID(lastInsertedId)
                 setRoomName(roomName)
             }).catch((error) => {
@@ -72,22 +68,27 @@ const JoinPage = () => {
     }
 
     const formIsValid = async () => {
-        for (const property in formInput) {
-            if (isEmpty(formInput[property]) && property !== "studentID") {
-                return false;
-            }
-            if (hasWhiteSpace(formInput[property].trim())) {
-                setError('Error: Input cannot contain whitespace')
-                return false;
-            }
+        if (isEmpty(roomCode) || hasWhiteSpace(roomCode)) {
+            setError('Error: Input cannot contain whitespace')
+            return false;
         }
+
         const [lastInsertedId, roomName, teachingAssistantName] = await joinWaitingListApi();
-        console.log('returned values from join waiting list api', lastInsertedId, roomName, teachingAssistantName)
         if (lastInsertedId === -1 && roomName && -1 && teachingAssistantName === -1) {
             return false;
         }
 
-        navigate('/student-view', { state: { formInput: formInput, studentID: lastInsertedId, roomName: roomName, teachingAssistantName: teachingAssistantName } });
+        navigate('/position-page', {
+            state: {
+                firstName: firstName,
+                lastName: lastName,
+                studentID: lastInsertedId,
+                roomName: roomName,
+                roomCode: roomCode,
+                teachingAssistantName: teachingAssistantName
+            }
+        });
+
         return true;
     }
 
@@ -98,6 +99,13 @@ const JoinPage = () => {
     return (
         <Grid container>
             <Grid item xs={12} sm={6}>
+                <Box m={3} display="flex" justifyContent="left" onClick={() => navigate("/dashboard")}>
+                    <IconButton sx={{
+                        color: 'black', background: 'white', borderRadius: '50%', '&:hover': { background: '#000000', opacity: 0.7, transition: '.2s' }
+                    }}>
+                        <ArrowBackIcon sx={{ fontSize: '40px' }} />
+                    </IconButton>
+                </Box>
                 <Box height="100vh" display="flex" justifyContent="center" alignItems="center">
                     <img src={joinGraphic} alt="Computer graphic" style={{ maxWidth: '90%', maxHeight: '90%' }} />
                 </Box>
@@ -113,6 +121,7 @@ const JoinPage = () => {
                 <Box height="100vh" bgcolor="gradient.linear(to-r, #2D7DD2, #0FA3B1)" display="flex"
                     flexDirection="column" justifyContent="center" alignItems="center">
                     <img src={logo} alt="Logo" className={"join-logo"} />
+
                     <Box
                         sx={{
                             background: 'white',
@@ -123,34 +132,17 @@ const JoinPage = () => {
                         }}
                     >
                         <Typography variant="h4" component="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'black', marginBottom: '2rem', textAlign: 'left' }}>
-                            Join a Room
+                            Join a List
                         </Typography>
-                        <TextField
-                            name="firstName"
-                            label="First Name"
-                            variant="outlined"
-                            value={formInput.firstName}
-                            fullWidth
-                            onChange={handleFormInputChange}
-                        />
-                        <Box mt={2}>
-                            <TextField
-                                name="lastName"
-                                label="Last Name"
-                                variant="outlined"
-                                value={formInput.lastName}
-                                fullWidth
-                                onChange={handleFormInputChange}
-                            />
-                        </Box>
+
                         <Box mt={2}>
                             <TextField
                                 name="roomCode"
                                 label="Room Code"
                                 variant="outlined"
-                                value={formInput.roomCode}
+                                value={roomCode}
                                 fullWidth
-                                onChange={handleFormInputChange}
+                                onChange={(e) => setRoomCode(e.target.value)}
                             />
                         </Box>
                         <Box mt={2}>

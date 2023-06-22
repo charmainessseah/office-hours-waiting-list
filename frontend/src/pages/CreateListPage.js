@@ -1,23 +1,17 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, Grid, Paper } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Box, Button, TextField, Typography, Grid } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
 import createGraphic from '../images/create-graphic.jpg';
 import { auth } from "../firebase"
 import logo from "../images/AOWL.png";
 
 const CreateListPage = () => {
     const navigate = useNavigate();
-    const [formInput, setFormInput] = useState({
-        firstName: "",
-        lastName: "",
-        roomName: "",
-    })
+    const { state } = useLocation()
+    const firstName = state.firstName
+    const lastName = state.lastName
 
-    const handleFormInputChange = (event) => {
-        const inputName = event.target.name;
-        const inputValue = event.target.value;
-        setFormInput({ ...formInput, [inputName]: inputValue })
-    }
+    const [waitingListName, setWaitingListName] = useState('')
 
     const isEmpty = (str) => {
         return (!str || str.trim().length === 0);
@@ -27,7 +21,7 @@ const CreateListPage = () => {
         const user = auth.currentUser;
         const token = user && (await user.getIdToken());
 
-        let url = `http://localhost:4000/waitingRoom/createWaitingRoom`
+        let url = `http://localhost:4000/waitingList/createWaitingList`
         let response = await fetch(url, {
             method: "POST",
             headers: {
@@ -35,9 +29,7 @@ const CreateListPage = () => {
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-                teaching_assistant_first_name: formInput["firstName"],
-                teaching_assistant_last_name: formInput["lastName"],
-                waiting_room_name: formInput["roomName"]
+                waiting_list_name: waitingListName
             }),
         })
         let jsonResponse = await response.json()
@@ -47,13 +39,12 @@ const CreateListPage = () => {
     }
 
     const formIsValid = async () => {
-        for (const property in formInput) {
-            if (isEmpty(formInput[property]) && property !== "roomCode") {
-                return false;
-            }
+        if (isEmpty(waitingListName)) {
+            return false;
         }
         const roomCode = await createWaitingListApi()
-        navigate('/waiting-list', { state: { formInput: formInput, roomCode: roomCode } });
+        navigate('/waiting-list', { state: { firstName: firstName, lastName: lastName, waitingListName: waitingListName, roomCode: roomCode } });
+
         return true;
     }
 
@@ -86,29 +77,11 @@ const CreateListPage = () => {
                         <Box display="flex" flexDirection="column" width="100%">
                             <Box mt={2}>
                                 <TextField
-                                    name="firstName"
-                                    label="First Name"
+                                    name="waitingListName"
+                                    label="Waiting list name"
                                     variant="outlined"
                                     fullWidth
-                                    onChange={handleFormInputChange}
-                                />
-                            </Box>
-                            <Box mt={2}>
-                                <TextField
-                                    name="lastName"
-                                    label="Last Name"
-                                    variant="outlined"
-                                    fullWidth
-                                    onChange={handleFormInputChange}
-                                />
-                            </Box>
-                            <Box mt={2}>
-                                <TextField
-                                    name="roomName"
-                                    label="Room Name"
-                                    variant="outlined"
-                                    fullWidth
-                                    onChange={handleFormInputChange}
+                                    onChange={(e) => setWaitingListName(e.target.value)}
                                 />
                             </Box>
                             <Box mt={3}>
